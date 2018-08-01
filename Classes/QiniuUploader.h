@@ -22,14 +22,14 @@
 
 /**
  *  start upload files to qiniu cloud storage.
- *  @param AccessToken Qiniu AccessToken from your sever
+ *  @param theAccessToken Qiniu AccessToken from your sever
  *  @return Boolean if files were nil, it will return NO.
  */
-- (Boolean)startUpload:(NSString * _Nonnull)theAccessToken
-               uploadOneFileSucceededHandler: (nullable void (^)(NSInteger index, NSDictionary * _Nonnull info)) successHandler
-             uploadOneFileFailedHandler: (nullable void (^)(NSInteger index, NSError * _Nullable error)) failHandler
-             uploadOneFileProgressHandler: (nullable void (^)(NSInteger index, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend)) progressHandler
-               uploadAllFilesComplete: (nullable void (^)()) completHandler;
+- (Boolean)startUpload:(nonnull NSString* (^)(NSInteger index))tokenHandle
+  uploadOneFileSucceededHandler: (nullable void (^)(NSInteger index, NSDictionary * _Nonnull info)) successHandler
+  uploadOneFileFailedHandler: (nullable void (^)(NSInteger index, NSError * _Nullable error)) failHandler
+  uploadOneFileProgressHandler: (nullable void (^)(NSInteger index, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend)) progressHandler
+  uploadAllFilesComplete: (nullable void (^)()) completeHandler;
 
 /**
  *  cancel uploading task at once.

@@ -111,16 +111,18 @@ UIAlertViewDelegate>{
     //startUpload
     uploader = [QiniuUploader sharedUploader];
     [uploader setFiles:@[file, file, file, file, file, file]];
-    
-    [uploader startUpload:[QiniuToken sharedQiniuToken].uploadToken uploadOneFileSucceededHandler:^(NSInteger index, NSDictionary * _Nonnull info) {
-        NSLog(@"index: %ld info: %@",(long)index, info);
-    } uploadOneFileFailedHandler:^(NSInteger index, NSError * _Nullable error) {
-        NSLog(@"error: %@", error);
-    } uploadOneFileProgressHandler:^(NSInteger index, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
-        NSLog(@"index:%ld percent:%f",(long)index, totalBytesSent * 1.0 / totalBytesExpectedToSend);
-    } uploadAllFilesComplete:^{
-        NSLog(@"complete");
-    }];
+  
+  [uploader startUpload:^NSString *(NSInteger index) {
+    return [QiniuToken sharedQiniuToken].uploadToken;
+  } uploadOneFileSucceededHandler:^(NSInteger index, NSDictionary * _Nonnull info) {
+    NSLog(@"index: %ld info: %@",(long)index, info);
+  } uploadOneFileFailedHandler:^(NSInteger index, NSError * _Nullable error) {
+    NSLog(@"error: %@", error);
+  } uploadOneFileProgressHandler:^(NSInteger index, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
+    NSLog(@"index:%ld percent:%f",(long)index, totalBytesSent * 1.0 / totalBytesExpectedToSend);
+  } uploadAllFilesComplete:^{
+    NSLog(@"complete");
+  }];
 }
 
 - (void)uploadAudio
@@ -137,7 +139,9 @@ UIAlertViewDelegate>{
     uploader = [QiniuUploader sharedUploader];
     uploader.files = @[file, file, file, file];
     
-    [uploader startUpload:[QiniuToken sharedQiniuToken].uploadToken uploadOneFileSucceededHandler:^(NSInteger index, NSDictionary * _Nonnull info) {
+  [uploader startUpload:^NSString *(NSInteger index) {
+    return [QiniuToken sharedQiniuToken].uploadToken;
+  } uploadOneFileSucceededHandler:^(NSInteger index, NSDictionary * _Nonnull info) {
         NSLog(@"index: %ld info: %@",(long)index, info);
     } uploadOneFileFailedHandler:^(NSInteger index, NSError * _Nullable error) {
         NSLog(@"error: %@", error);
@@ -170,7 +174,9 @@ UIAlertViewDelegate>{
         QiniuFile *file = [[QiniuFile alloc] initWithAsset:asset];
         uploader.files = @[file];
         
-        [uploader startUpload:[QiniuToken sharedQiniuToken].uploadToken uploadOneFileSucceededHandler:^(NSInteger index, NSDictionary * _Nonnull info) {
+      [uploader  startUpload:^NSString *(NSInteger index) {
+        return [QiniuToken sharedQiniuToken].uploadToken;
+      } uploadOneFileSucceededHandler:^(NSInteger index, NSDictionary * _Nonnull info) {
             NSLog(@"index: %ld info: %@",(long)index, info);
         } uploadOneFileFailedHandler:^(NSInteger index, NSError * _Nullable error) {
             NSLog(@"error: %@", error);

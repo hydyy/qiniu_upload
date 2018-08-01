@@ -11,19 +11,20 @@
 #define kQiniuUploadURL @"https://upload.qbox.me"
 #define kQiniuTaskKey @"qiniuTaskKey"
 
+typedef NSString* (^TokenByUploadFileIndex)(NSInteger index);
 typedef void (^UploadOneFileSucceededHandler)(NSInteger index, NSDictionary * _Nonnull info);
 typedef void (^UploadOneFileFailedHandler)(NSInteger index, NSError * _Nullable error);
 typedef void (^UploadOneFileProgressHandler)(NSInteger index, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend);
 typedef void (^UploadAllFilesCompleteHandler)(void);
 
 @implementation QiniuUploader{
-    NSString *accessToken;
     NSMutableArray *fileQueue;
     NSMutableArray *operations;
     NSMutableDictionary *taskRefs;
     NSMutableDictionary *responsesData;
     __weak QiniuUploader *weakSelf;
     NSURLSession *defaultSession;
+    TokenByUploadFileIndex tokenHandle;
     UploadOneFileSucceededHandler oneSucceededHandler;
     UploadOneFileFailedHandler oneFailedHandler;
     UploadOneFileProgressHandler oneProgressHandler;
@@ -67,13 +68,13 @@ typedef void (^UploadAllFilesCompleteHandler)(void);
     return uploader;
 }
 
-- (Boolean)startUpload:(NSString * _Nonnull)theAccessToken
+- (Boolean)startUpload:(nonnull NSString* (^)(NSInteger index))tokenHandle
         uploadOneFileSucceededHandler: (nullable void (^)(NSInteger index, NSDictionary * _Nonnull info)) successHandler
            uploadOneFileFailedHandler: (nullable void (^)(NSInteger index, NSError * _Nullable error)) failHandler
          uploadOneFileProgressHandler: (nullable void (^)(NSInteger index, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend)) progressHandler
                uploadAllFilesComplete: (nullable void (^)()) completeHandler
 {
-    accessToken = theAccessToken;
+    tokenHandle = tokenHandle;
     oneSucceededHandler = successHandler;
     oneFailedHandler = failHandler;
     oneProgressHandler = progressHandler;
@@ -133,8 +134,9 @@ typedef void (^UploadAllFilesCompleteHandler)(void);
     if (file.key) {
         [inputStream addPartWithName:@"key" string:file.key];
     }
-    
-    [inputStream addPartWithName:@"token" string: accessToken ?: [[QiniuToken sharedQiniuToken] uploadToken]];
+  
+    NSString *token = tokenHandle(fileIndex);
+    [inputStream addPartWithName:@"token" string: token ? : [[QiniuToken sharedQiniuToken] uploadToken]];
     
     if (file.path) {
         [inputStream addPartWithName:@"file" path: file.path];
