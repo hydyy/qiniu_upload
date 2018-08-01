@@ -74,7 +74,7 @@ typedef void (^UploadAllFilesCompleteHandler)(void);
          uploadOneFileProgressHandler: (nullable void (^)(NSInteger index, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend)) progressHandler
                uploadAllFilesComplete: (nullable void (^)()) completeHandler
 {
-    tokenHandle = tokenHandle;
+    self->tokenHandle = tokenHandle;
     oneSucceededHandler = successHandler;
     oneFailedHandler = failHandler;
     oneProgressHandler = progressHandler;

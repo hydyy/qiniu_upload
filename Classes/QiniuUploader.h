@@ -22,7 +22,6 @@
 
 /**
  *  start upload files to qiniu cloud storage.
- *  @param theAccessToken Qiniu AccessToken from your sever
  *  @return Boolean if files were nil, it will return NO.
  */
 - (Boolean)startUpload:(nonnull NSString* (^)(NSInteger index))tokenHandle
