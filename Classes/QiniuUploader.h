@@ -16,6 +16,8 @@
 @property (assign, atomic) NSInteger maxConcurrentNumber;
 @property (assign, atomic, readonly) Boolean isRunning;
 @property (retain, atomic) NSArray * _Nonnull files;
+/// 域名选择 0:https://upload.qbox.me,1:https://upload-z1.qbox.me 默认为0
+@property (nonatomic, assign) int domainIndex;
 
 
 + (id _Nullable)sharedUploader;

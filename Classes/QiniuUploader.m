@@ -8,7 +8,8 @@
 
 #import "QiniuUploader.h"
 
-#define kQiniuUploadURL @"https://upload.qbox.me"
+#define kQiniuUploadURLS @[@"https://upload.qbox.me",@"https://upload-z1.qbox.me"]
+
 #define kQiniuTaskKey @"qiniuTaskKey"
 
 typedef NSString* (^TokenByUploadFileIndex)(NSInteger index);
@@ -34,6 +35,7 @@ typedef void (^UploadAllFilesCompleteHandler)(void);
 - (id)init
 {
     if (self = [super init]) {
+      _domainIndex = 0;
         _files = [[NSMutableArray alloc] init];
         _isRunning = NO;
         _maxConcurrentNumber = 1;
@@ -152,7 +154,7 @@ typedef void (^UploadAllFilesCompleteHandler)(void);
     }
 #endif
     
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:kQiniuUploadURL]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:kQiniuUploadURLS[self.domainIndex]]];
     [request setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", [inputStream boundary]] forHTTPHeaderField:@"Content-Type"];
     [request setValue:[NSString stringWithFormat:@"%ld", (unsigned long)[inputStream length]] forHTTPHeaderField:@"Content-Length"];
     [request setHTTPBodyStream:inputStream];
@@ -257,7 +259,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
             }
         } else {
             if (oneFailedHandler) {
-                error = [NSError errorWithDomain:kQiniuUploadURL code:httpResponse.statusCode userInfo:@{ NSLocalizedDescriptionKey : NSLocalizedString([NSString stringWithUTF8String:[data bytes]], @"")}];
+                error = [NSError errorWithDomain:kQiniuUploadURLS[self.domainIndex] code:httpResponse.statusCode userInfo:@{ NSLocalizedDescriptionKey : NSLocalizedString([NSString stringWithUTF8String:[data bytes]], @"")}];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     oneFailedHandler(fileIndex, error);
                 });
